@@ -10,11 +10,11 @@ Welcome to the ShapeNet Preprocessing and Rendering Toolkit! This repository con
 ## Getting Started
 
 ### Prerequisites
+Tested with the following versions:
+- Blender 4.2
+- Python 3.11.5
 
-- Blender 2.8 or later
-- Python 3.6 or later
-
-Ensure Blender is installed on your system and accessible from the command line. Python 3 should also be installed and configured correctly.
+Ensure Blender and bpy is installed on your system and accessible from the command line.
 
 ### Installation
 
