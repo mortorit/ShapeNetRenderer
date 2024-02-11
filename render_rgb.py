@@ -15,6 +15,10 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
     render.resolution_percentage = 100
     render.film_transparent = True
 
+    if bpy.context.active_object is not None:
+        bpy.context.active_object.select_set(True)
+    bpy.ops.object.delete()
+
     # Import textured mesh
     bpy.ops.wm.obj_import(filepath=obj)  # Make sure this matches your Blender version's import function
 
