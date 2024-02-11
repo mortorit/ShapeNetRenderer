@@ -41,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_dataset_path", type=str, required=True, help="Input path of the dataset.")
     parser.add_argument("--output_path", type=str, required=True, help="Output path for the rendered views.")
     parser.add_argument("--views", type=int, default=30, help="Number of views to be rendered for each sample.")
-    parser.add_argument("--blender_path", default="/home/mortorit/blender-git/build_linux/bin/blender", help="Path to the Blender executable.")
+    parser.add_argument("--blender_path", help="Path to the Blender executable.")
 
     args = parser.parse_args()
 
