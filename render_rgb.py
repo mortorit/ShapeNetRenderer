@@ -15,15 +15,10 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
     render.resolution_percentage = 100
     render.film_transparent = True
 
-    # Delete default cube
-    if bpy.context.active_object is not None:
-        bpy.context.active_object.select_set(True)
-    bpy.ops.object.delete()
-
     # Import textured mesh
-    bpy.ops.wm.obj_import(filepath=obj)
+    bpy.ops.wm.obj_import(filepath=obj)  # Make sure this matches your Blender version's import function
 
-    obj = bpy.context.selected_objects[0]
+    obj = bpy.context.selected_objects[0]  # Assumes the imported object is selected
     bpy.context.view_layer.objects.active = obj
 
     # Apply transformations
@@ -38,6 +33,7 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
         bpy.ops.object.modifier_add(type='EDGE_SPLIT')
         bpy.context.object.modifiers["EdgeSplit"].split_angle = 1.32645
         bpy.ops.object.modifier_apply(modifier="EdgeSplit")
+
 
     # Configure lighting and camera
     # Make light just directional, disable shadows
