@@ -1,40 +1,55 @@
 import argparse
 import os
-import sys
 import subprocess
+from concurrent.futures import ProcessPoolExecutor
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-if script_dir not in sys.path:
-    sys.path.append(script_dir)
 
-from render_rgb import main
+def process_model(blender_executable, views, model_path, output_sample_path, engine, hide_output=True):
+    os.makedirs(output_sample_path, exist_ok=True)
 
-def process_dataset(input_dataset_path, output_path, views, blender_executable):
-    for category_name in os.listdir(input_dataset_path):
-        category_path = os.path.join(input_dataset_path, category_name)
-        if os.path.isdir(category_path):
-            for sample_name in os.listdir(category_path):
-                sample_path = os.path.join(category_path, sample_name)
-                model_path = os.path.join(sample_path, "models", "model_normalized.obj")
-                if os.path.exists(model_path):
-                    output_sample_path = os.path.join(output_path, category_name, sample_name)
-                    os.makedirs(output_sample_path, exist_ok=True)
-                    command = [
-                        blender_executable, "--background", "--python", "render_rgb.py", "--",
-                        "--views", str(views),
-                        "--obj", model_path,
-                        "--output_folder", output_sample_path,
-                        "--scale", "1",
-                        "--remove_doubles", "True",
-                        "--edge_split", "True",
-                        "--color_depth", "8",
-                        "--format", "PNG",
-                        "--resolution", "600",
-                        "--engine", "BLENDER_EEVEE"
-                    ]
-                    print(f"Processing {model_path}...")
-                    subprocess.run(command, check=True)
-                    print(f"Output saved to {output_sample_path}")
+    command = [
+        blender_executable, "--background", "--python", "render_rgb.py", "--",
+        "--views", str(views),
+        "--obj", model_path,
+        "--output_folder", output_sample_path,
+        "--scale", "1",
+        "--remove_doubles", "True",
+        "--edge_split", "True",
+        "--color_depth", "8",
+        "--format", "PNG",
+        "--resolution", "600",
+        "--engine", engine
+    ]
+
+    with open(os.devnull, 'w') as devnull:
+
+        print(f"Processing {model_path}...")
+        if hide_output:
+            subprocess.run(command, check=True, stdout=devnull, stderr=devnull)
+        else:
+            subprocess.run(command, check=True)
+        print(f"Output saved to {output_sample_path}")
+
+
+def process_dataset(input_dataset_path, output_path, views, blender_executable, engine, max_processes):
+    tasks = []
+    with ProcessPoolExecutor(max_workers=max_processes) as executor:
+        for category_name in os.listdir(input_dataset_path):
+            category_path = os.path.join(input_dataset_path, category_name)
+            if os.path.isdir(category_path):
+                for sample_name in os.listdir(category_path):
+                    sample_path = os.path.join(category_path, sample_name)
+                    model_path = os.path.join(sample_path, "models", "model_normalized.obj")
+                    if os.path.exists(model_path):
+                        output_sample_path = os.path.join(output_path, category_name, sample_name)
+                        tasks.append(
+                            executor.submit(process_model, blender_executable, views, model_path, output_sample_path,
+                                            engine))
+
+    # Wait for all tasks to complete (optional, depending on your use case)
+    for future in tasks:
+        future.result()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process dataset and render views for each sample.")
@@ -42,7 +57,10 @@ if __name__ == "__main__":
     parser.add_argument("--output_path", type=str, required=True, help="Output path for the rendered views.")
     parser.add_argument("--views", type=int, default=30, help="Number of views to be rendered for each sample.")
     parser.add_argument("--blender_path", help="Path to the Blender executable.")
+    parser.add_argument("--engine", default="BLENDER_WORKBENCH", help="Blender engine to use.")
+    parser.add_argument("--max_processes", type=int, default=4, help="Maximum number of parallel processes.")
 
     args = parser.parse_args()
 
-    process_dataset(args.input_dataset_path, args.output_path, args.views, args.blender_path)
+    process_dataset(args.input_dataset_path, args.output_path, args.views, args.blender_path, args.engine,
+                    args.max_processes)

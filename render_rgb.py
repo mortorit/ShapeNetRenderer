@@ -38,7 +38,6 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
         bpy.context.object.modifiers["EdgeSplit"].split_angle = 1.32645
         bpy.ops.object.modifier_apply(modifier="EdgeSplit")
 
-
     # Configure lighting and camera
     # Make light just directional, disable shadows
     light = bpy.data.lights.get('Light')
@@ -55,7 +54,6 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
     light2.specular_factor = 1.0
     light2.energy = 0.015
     bpy.data.objects['Sun'].rotation_euler = (math.radians(180), 0, 0)
-
 
     # Place camera
     cam = scene.objects['Camera']
@@ -76,13 +74,9 @@ def main(views, obj, output_folder, scale, remove_doubles, edge_split, color_dep
     context.view_layer.objects.active = cam_empty
     cam_constraint.target = cam_empty
 
-    stepsize = 360.0 / views
-    rotation_mode = 'XYZ'
-
     # Render views
     stepsize = 360.0 / views
     for i in range(0, views):
-        print("Rendering view {}...".format(i + 1))
         render.filepath = os.path.join(output_folder, f"render_{i:03d}")
         bpy.ops.render.render(write_still=True)
         cam_empty.rotation_euler[2] += math.radians(stepsize)
