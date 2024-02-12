@@ -55,10 +55,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process dataset and render views for each sample.")
     parser.add_argument("--input_dataset_path", type=str, required=True, help="Input path of the dataset.")
     parser.add_argument("--output_path", type=str, required=True, help="Output path for the rendered views.")
-    parser.add_argument("--views", type=int, default=30, help="Number of views to be rendered for each sample.")
-    parser.add_argument("--blender_path", help="Path to the Blender executable.")
+    parser.add_argument("--views", type=int, default=10, help="Number of views to be rendered for each sample.")
+    parser.add_argument("--blender_path", required=True, help="Path to the Blender executable.")
     parser.add_argument("--engine", default="BLENDER_WORKBENCH", help="Blender engine to use.")
     parser.add_argument("--max_processes", type=int, default=4, help="Maximum number of parallel processes.")
+    parser.add_argument("--hide_output", default=True, help="Hide output from Blender.")
 
     args = parser.parse_args()
 
