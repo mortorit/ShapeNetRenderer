@@ -40,13 +40,25 @@ def process_dataset(input_dataset_path, output_path, views, blender_executable, 
                 for sample_name in os.listdir(category_path):
                     sample_path = os.path.join(category_path, sample_name)
                     model_path = os.path.join(sample_path, "models", "model_normalized.obj")
+
                     if os.path.exists(model_path):
                         output_sample_path = os.path.join(output_path, category_name, sample_name)
+                        # Check if output directory exists and has sufficient views
+                        if os.path.exists(output_sample_path):
+                            num_files = len([f for f in os.listdir(output_sample_path) if
+                                             os.path.isfile(os.path.join(output_sample_path, f))])
+                            if num_files == views:
+                                print(f"Skipping {model_path} as it already has sufficient views.")
+                                continue
+
                         tasks.append(
                             executor.submit(process_model, blender_executable, views, model_path, output_sample_path,
                                             engine))
 
-    # Wait for all tasks to complete (optional, depending on your use case)
+
+
+
+    # Wait for all tasks to complete
     for future in tasks:
         future.result()
 

@@ -25,6 +25,14 @@ git clone https://github.com/mortorit/ShapeNetRenderer.git
 cd ShapeNetRenderer
 ```
 
+### Build the Blender Environment
+
+To use the Blender Python API, you must build the Blender environment. This can be done by running the following command:
+
+```sh
+docker build -t blender .
+```
+
 ### Adjusting Textures
 
 Before rendering, ensure each OBJ file in your dataset references its textures correctly. Run the adjust_shapenet_textures.py script as follows:
@@ -40,7 +48,7 @@ Replace /path/to/shapenet with the path to your ShapeNet dataset.
 To render the dataset, use the render_dataset.py script. This requires specifying the input dataset path, output path for renders, and the number of views:
 
 ```sh
-blender --background --python render_dataset.py -- --input_dataset_path /path/to/shapenet --output_path /path/to/output --views 30
+python render_dataset.py --dataset_directory /path/to/shapenet --output_directory /path/to/output --blender_path /path/to/blender
 ```
 
 ## Contributing
