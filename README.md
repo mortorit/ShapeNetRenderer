@@ -48,7 +48,7 @@ Replace /path/to/shapenet with the path to your ShapeNet dataset.
 To render the dataset, use the render_dataset.py script. This requires specifying the input dataset path, output path for renders, and the number of views:
 
 ```sh
-python render_dataset.py --dataset_directory /path/to/shapenet --output_directory /path/to/output --blender_path /path/to/blender
+python render_dataset_multi.py --dataset_directory /path/to/shapenet --output_directory /path/to/output --blender_path /path/to/blender
 ```
 
 ## Contributing
