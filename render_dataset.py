@@ -31,10 +31,14 @@ def process_model(blender_executable, views, model_path, output_sample_path, eng
         print(f"Output saved to {output_sample_path}")
 
 
-def process_dataset(input_dataset_path, output_path, views, blender_executable, engine, max_processes):
+def process_dataset(input_dataset_path, output_path, views, blender_executable, engine, max_processes, categories, hide_output):
     tasks = []
     with ProcessPoolExecutor(max_workers=max_processes) as executor:
         for category_name in os.listdir(input_dataset_path):
+
+            if categories and category_name not in categories:
+                continue
+
             category_path = os.path.join(input_dataset_path, category_name)
             if os.path.isdir(category_path):
                 for sample_name in os.listdir(category_path):
@@ -53,7 +57,7 @@ def process_dataset(input_dataset_path, output_path, views, blender_executable, 
 
                         tasks.append(
                             executor.submit(process_model, blender_executable, views, model_path, output_sample_path,
-                                            engine))
+                                            engine, hide_output))
 
 
 
@@ -72,8 +76,11 @@ if __name__ == "__main__":
     parser.add_argument("--engine", default="BLENDER_WORKBENCH", help="Blender engine to use.")
     parser.add_argument("--max_processes", type=int, default=4, help="Maximum number of parallel processes.")
     parser.add_argument("--hide_output", default=True, help="Hide output from Blender.")
+    parser.add_argument("--categories", nargs='*',
+                        help="Optional list of categories to process. If not provided, "
+                             "all categories will be processed.")
 
     args = parser.parse_args()
 
     process_dataset(args.input_dataset_path, args.output_path, args.views, args.blender_path, args.engine,
-                    args.max_processes)
+                    args.max_processes, args.categories, args.hide_output)
